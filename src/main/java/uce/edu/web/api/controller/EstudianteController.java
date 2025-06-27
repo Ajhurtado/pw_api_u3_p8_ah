@@ -43,26 +43,33 @@ public class EstudianteController {
     @POST
     @Path("")
     public void guardar(@RequestBody Estudiante estudiante){
-        
+        this.estudianteService.guardar(estudiante);
     }
     
     //Debo enviar el estudiante que voy a actualizar, pero tambien necesita un PathParam
     @PUT
     @Path("/{id}")
     public void actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id){
-
+        estudiante.setId(id);
+        this.estudianteService.actualizarPorId(estudiante);
     }
 
     @PATCH
     @Path("/{id}")
     public void actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id){
-
+        estudiante.setId(id);
+        Estudiante e = this.estudianteService.buscarPorId(id);
+        if(estudiante.getApellido()!=null){
+            e.setApellido(estudiante.getApellido());
+        }
+        this.estudianteService.actualizarParcialPorId(e);
     }
 
     //Aqui no necesitamos al estudiante, solamente al identificador
     @DELETE
     @Path("/{id}")
     public void borrarPorId(@PathParam("id") Integer id){
+        this.estudianteService.borrarPorId(id);
 
     }
 
