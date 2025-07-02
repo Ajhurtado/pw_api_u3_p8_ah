@@ -9,7 +9,7 @@ public interface IEstudianteRepo {
 
     public Estudiante selecionarPorId(Integer id);
 
-    public List<Estudiante> selecionarTodos();
+    public List<Estudiante> selecionarTodos(String genero);
 
     public void actualizarPorId(Estudiante estudiante);
 

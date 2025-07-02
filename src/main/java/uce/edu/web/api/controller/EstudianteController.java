@@ -2,6 +2,7 @@ package uce.edu.web.api.controller;
 
 import java.util.List;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import jakarta.inject.Inject;
@@ -12,6 +13,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
 import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.service.IEstudianteService;
 
@@ -27,16 +29,22 @@ public class EstudianteController {
 
     //Se las conoce como CAPACIDADES, a estos metodos, como ya aplicamos en el application.properties, quitamos por ahora
     //el consultarPorID
+    //PathParam es para consultar un recurso mediante un IDENFITICADOR
     @GET
     @Path("/{id}")
     public Estudiante consultarPorId(@PathParam("id")Integer id) {
         return this.estudianteService.buscarPorId(id); 
     }
 
+    //En este colocamos un QueryParam, que es un parametro de consulta, que se coloca en la URL
+    //url?genero=m
+    //url?genero=F&provincia=pichincha
     @GET
     @Path("")
-    public List<Estudiante> consultarTodos() {
-        return this.estudianteService.buscarTodos(); 
+    @Operation(summary = "Consulta todos los estudiantes", description = "Esta CAPACIDAD permite retornar una lista de todos los estudiantes registrados")
+    public List<Estudiante> consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
+        System.out.println(provincia);
+        return this.estudianteService.buscarTodos(genero); 
     }
 
     //El guardar recive un estudiante, el recurso a insertar debe ir en el BODY, el estudiante va a venir en el BODY

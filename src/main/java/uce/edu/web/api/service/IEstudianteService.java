@@ -8,7 +8,7 @@ public interface IEstudianteService {
     //programamos el metodo
     public Estudiante buscarPorId(Integer id);
 
-    public List<Estudiante> buscarTodos();
+    public List<Estudiante> buscarTodos(String genero);
 
     public void actualizarPorId(Estudiante estudiante);
 
