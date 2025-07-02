@@ -26,5 +26,26 @@ public class ProfesorRepoImpl implements IProfesorRepo {
       TypedQuery<Profesor> myQuery = this.entityManager.createQuery("SELECT p FROM Profesor p", Profesor.class);
       return myQuery.getResultList();
     }
+
+    @Override
+    public void actualizarPorId(Profesor profesor) {
+      this.entityManager.merge(profesor);
+    }
+
+    @Override
+    public void actualizarParcialPorId(Profesor profesor) {
+      this.entityManager.merge(profesor);
+      // Aquí podrías implementar lógica para actualizar solo ciertos campos si es necesario
+    }
+
+    @Override
+    public void borrarPorId(Integer id) {
+      this.entityManager.remove(this.selecionarPorId(id));
+    }
+
+    @Override
+    public void insertar(Profesor profesor) {
+      this.entityManager.persist(profesor);
+    }
     
 }

@@ -38,25 +38,32 @@ public class ProfesorController {
     @POST
     @Path("")
     public void guardar(@RequestBody Profesor profesor){
-
+        this.iProfesorService.guardar(profesor);
+        //este metodo guarda un profesor, el cual viene en el BODY
     }
 
     @PUT
-    @Path("")
+    @Path("/{id}")
     public void actualizarPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id){
-
+        profesor.setId(id);
+        this.iProfesorService.actualizarPorId(profesor);
     }
 
     @PATCH
-    @Path("")
+    @Path("/{id}")
     public void actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id){
-
+        profesor.setId(id);
+        Profesor p = this.iProfesorService.buscarPorId(id);
+        if(profesor.getApellido()!=null){
+            p.setApellido(profesor.getApellido());
+        }
+        this.iProfesorService.actualizarParcialPorId(p);
     }
 
     @DELETE
-    @Path("")
+    @Path("/{id}")
     public void borrarPorId( @PathParam("id") Integer id){
-
+        this.iProfesorService.borrarPorId(id);
     }
 
 
