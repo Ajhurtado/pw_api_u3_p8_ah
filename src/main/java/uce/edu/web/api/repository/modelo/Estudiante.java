@@ -1,7 +1,5 @@
 package uce.edu.web.api.repository.modelo;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +23,7 @@ public class Estudiante {
     private String apellido;
     
     @Column(name = "estu_fecha_nacimiento")
-    private LocalDate fechaNacimiento;
+    private String fechaNacimiento;
 
     //Set y get
     public Integer getId() {
@@ -52,11 +50,11 @@ public class Estudiante {
         this.apellido = apellido;
     }
 
-    public LocalDate getFechaNacimiento() {
+    public String getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+    public void setFechaNacimiento(String fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
 
