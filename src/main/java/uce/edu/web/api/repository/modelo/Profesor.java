@@ -1,12 +1,17 @@
 package uce.edu.web.api.repository.modelo;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+@XmlRootElement
 @Entity
 @Table(name = "profesor") 
 public class Profesor {
@@ -20,9 +25,12 @@ public class Profesor {
     @Column(name = "pro_apellido")
     private String apellido;
     @Column(name = "pro_fecha_nacimiento")
-    private String fechaNacimiento;
+    private LocalDateTime fechaNacimiento;
     @Column(name = "pro_numero_cedula")
     private String numeroCedula;
+    @Column(name = "pro_genero")
+    private String genero;
+
     public Integer getId() {
         return id;
     }
@@ -41,10 +49,11 @@ public class Profesor {
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
-    public String getFechaNacimiento() {
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    public LocalDateTime getFechaNacimiento() {
         return fechaNacimiento;
     }
-    public void setFechaNacimiento(String fechaNacimiento) {
+    public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
     public String getNumeroCedula() {
@@ -52,6 +61,12 @@ public class Profesor {
     }
     public void setNumeroCedula(String numeroCedula) {
         this.numeroCedula = numeroCedula;
+    }
+    public String getGenero() {
+        return genero;
+    }
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     
