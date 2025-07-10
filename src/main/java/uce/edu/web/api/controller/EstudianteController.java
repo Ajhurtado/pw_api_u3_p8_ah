@@ -23,20 +23,25 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.repository.modelo.Hijo;
+import uce.edu.web.api.service.HijoServiceImpl;
 import uce.edu.web.api.service.IEstudianteService;
+import uce.edu.web.api.service.IHijoService;
+import uce.edu.web.api.service.mapper.EstudianteMapper;
 import uce.edu.web.api.service.to.EstudianteTo;
 
 //tambien suele llamarse RECURSOS
 @Path("/estudiantes")
 @Produces(MediaType.APPLICATION_JSON) 
 @Consumes(MediaType.APPLICATION_JSON)
-public class EstudianteController extends BaseControlador {
+public class EstudianteController {
     //por cada objeto se crea su respectivo, repositori, modelo, service y controller
     //este controler y tiene y representa a la identidad estudainte
     //cada metodo tiene un path
 
     @Inject
     private IEstudianteService estudianteService;
+    @Inject
+    private IHijoService hijoService;
 
     //Se las conoce como CAPACIDADES, a estos metodos, como ya aplicamos en el application.properties, quitamos por ahora
     //el consultarPorID
@@ -47,7 +52,8 @@ public class EstudianteController extends BaseControlador {
     public Response consultarPorId(@PathParam("id")Integer id, @Context UriInfo uriInfo) {
         //Response es una clase que nos permite retornar un codigo de estado, un mensaje y el objeto
         
-        EstudianteTo estu = this.estudianteService.buscarPorId(id, uriInfo);
+        EstudianteTo estu =  EstudianteMapper.toTo(this.estudianteService.buscarPorId(id)); 
+        estu.buildURI(uriInfo);
         
         return Response.status(227).entity(estu).build();  
     }
@@ -111,15 +117,7 @@ public class EstudianteController extends BaseControlador {
     @Path("/{id}/hijos")
     public List<Hijo> obtenerHijosPorId(@PathParam("id") Integer id) {
     // Este método debería retornar una lista de hijos del estudiante con el ID proporcionado
-        Hijo h1 = new Hijo();
-        h1.setNombre("Alexis");  
-        Hijo h2 = new Hijo();
-        h2.setNombre("Jhoel");  
-
-        List<Hijo> hijos = new ArrayList<>();
-        hijos.add(h1);
-        hijos.add(h2);
-    return hijos; 
+        return this.hijoService.buscarPorEstudianteId(id);
     }
 
 }

@@ -16,15 +16,10 @@ public class EstudianteTo {
     private LocalDateTime fechaNacimiento;
     private String genero;
     //para los links de hijos que va a tener el estudiante
-    public Map<String, String> _links = new HashMap<>();
+    //cambiamos de public a private para generar los getters y setters
+    private Map<String, String> _links = new HashMap<>();
   
-    public EstudianteTo(Integer id, String nombre, String apellido, LocalDateTime fechaNacimiento, String genero, UriInfo uriInfo) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.fechaNacimiento = fechaNacimiento;
-        this.genero = genero;
-
+    public void buildURI(UriInfo uriInfo){
         //como poner las URLS de los links
         //base uri nos da toda la base de la URL
         URI todosHijos = uriInfo.getBaseUriBuilder()
@@ -32,8 +27,9 @@ public class EstudianteTo {
             .path(EstudianteController.class, "obtenerHijosPorId")
             .build(id);
 
-        _links.put("hijos", todosHijos.toString());    
+        _links.put("hijos", todosHijos.toString());
     }
+
     public Integer getId() {
         return id;
     }
@@ -64,7 +60,34 @@ public class EstudianteTo {
     public void setGenero(String genero) {
         this.genero = genero;
     }
+    public Map<String, String> get_links() {
+        return _links;
+    }
+    public void set_links(Map<String, String> _links) {
+        this._links = _links;
+    }
 
 
-    
+      //Ya eliminamos los constructores
+    /*public EstudianteTo() {
+       
+    }*/
+
+    //si no ponemos el contrusctor este APARECE POR DEFECTO
+    /*  public EstudianteTo(Integer id, String nombre, String apellido, LocalDateTime fechaNacimiento, String genero, UriInfo uriInfo) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.fechaNacimiento = fechaNacimiento;
+        this.genero = genero;
+
+        //como poner las URLS de los links
+        //base uri nos da toda la base de la URL
+        URI todosHijos = uriInfo.getBaseUriBuilder()
+            .path(EstudianteController.class)
+            .path(EstudianteController.class, "obtenerHijosPorId")
+            .build(id);
+
+        _links.put("hijos", todosHijos.toString());    
+    }*/
 }
