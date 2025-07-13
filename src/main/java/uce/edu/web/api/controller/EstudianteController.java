@@ -66,28 +66,41 @@ public class EstudianteController {
     @GET
     @Path("")
     @Operation(summary = "Consulta todos los estudiantes", description = "Esta CAPACIDAD permite retornar una lista de todos los estudiantes registrados")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
         System.out.println(provincia);
-        return Response.status(Response.Status.OK).entity(this.estudianteService.buscarTodos(genero)).build();
+        List<Estudiante> estudiantes = this.estudianteService.buscarTodos(genero);
+        List<EstudianteTo> estudiantesTo = new ArrayList<>();
+        for (Estudiante est : estudiantes) {
+            EstudianteTo estuTo = EstudianteMapper.toTo(est);
+            estuTo.buildURI(uriInfo);
+            estudiantesTo.add(estuTo);
+        }
+        return Response.status(Response.Status.OK).entity(estudiantesTo).build();
+
     }
 
     //El guardar recive un estudiante, el recurso a insertar debe ir en el BODY, el estudiante va a venir en el BODY
     //Especfico en que va a llegar, en este caso MediaType de Jackarta, que es el tipo de contenido que se va a enviar
     @POST
     @Path("")
-
-    public Response guardar(@RequestBody Estudiante estudiante){
+    public Response guardar(@RequestBody Estudiante estudiante, @Context UriInfo uriInfo) {
         this.estudianteService.guardar(estudiante);
-       return Response.status(227).entity(estudiante).build();
+        EstudianteTo estuToGuardar = EstudianteMapper.toTo(estudiante);
+        estuToGuardar.buildURI(uriInfo);
+        return Response.status(Response.Status.CREATED).entity(estuToGuardar).build();
+
     }
     
     //Debo enviar el estudiante que voy a actualizar, pero tambien necesita un PathParam
     @PUT
     @Path("/{id}")
-    public Response actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id){
+    public Response actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id, @Context UriInfo uriInfo) {
         estudiante.setId(id);
         this.estudianteService.actualizarPorId(estudiante);
-        return Response.status(Response.Status.OK).entity(estudiante).build(); 
+        EstudianteTo estuToActualizar = EstudianteMapper.toTo(estudiante);
+        estuToActualizar.buildURI(uriInfo);
+        return Response.status(Response.Status.OK).entity(estuToActualizar).build();
+ 
     }
 
  /*    @PATCH
@@ -107,8 +120,7 @@ public class EstudianteController {
     @Path("/{id}")
     public Response borrarPorId(@PathParam("id") Integer id){
         this.estudianteService.borrarPorId(id);
-        return Response.status(227).build(); 
-
+        return Response.status(Response.Status.NO_CONTENT).build();
     }
 
     //htttp://........./estudiantes/{id}/hijos GET

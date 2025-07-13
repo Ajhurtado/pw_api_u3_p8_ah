@@ -28,6 +28,35 @@ public class EstudianteTo {
             .build(id);
 
         _links.put("hijos", todosHijos.toString());
+
+        URI consultarId = uriInfo.getBaseUriBuilder()
+            .path(EstudianteController.class)
+            .path(EstudianteController.class, "consultarPorId")
+            .build(id);
+
+        _links.put("obtenerPorId", consultarId.toString());
+
+        URI consultarTodos = uriInfo.getBaseUriBuilder()
+            .path(EstudianteController.class)
+            .path(EstudianteController.class, "consultarTodos")
+            .build();
+        _links.put("obtenerTodos", consultarTodos.toString());
+
+        URI actualizarId = uriInfo.getBaseUriBuilder()
+            .path(EstudianteController.class)
+            .path(EstudianteController.class, "actualizarPorId")
+            .build(id);
+        _links.put("actualizarPorId", actualizarId.toString());
+
+        URI borrarId = uriInfo.getBaseUriBuilder()
+            .path(EstudianteController.class)
+            .path(EstudianteController.class, "borrarPorId")
+            .build(id);
+        _links.put("borrar", borrarId.toString());
+
+
+
+
     }
 
     public Integer getId() {
