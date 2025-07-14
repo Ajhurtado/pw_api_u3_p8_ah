@@ -19,9 +19,11 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import uce.edu.web.api.repository.modelo.Hijo;
+import uce.edu.web.api.repository.modelo.HijoProfesor;
 import uce.edu.web.api.repository.modelo.Profesor;
+import uce.edu.web.api.service.IHijoProfesorService;
 import uce.edu.web.api.service.IProfesorService;
+import uce.edu.web.api.service.mapper.ProfesorMapper;
 import uce.edu.web.api.service.to.ProfesorTo;
 
 @Path("/profesores")
@@ -32,37 +34,53 @@ public class ProfesorController {
     @Inject
     private IProfesorService iProfesorService;
 
+    @Inject
+    private IHijoProfesorService iHijoProfesorService;
+
     //Ya quitamos la parte de consultarPor/, ya que ahora estamos en el Nivel 1
     @GET
     @Path("/{id}")
     public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
-        ProfesorTo profe = this.iProfesorService.buscarPorId(id, uriInfo);
+        ProfesorTo profe = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
+        profe.buildURI(uriInfo);
+
         return Response.status(228).entity(profe).build();
 
     }
 
     @GET
     @Path("")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia){
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,@Context UriInfo uriInfo){
         System.out.println(provincia);
+        List<Profesor> profesores = this.iProfesorService.buscarTodos(genero);
+        List<ProfesorTo> profEstudianteTos = new ArrayList<>();
+        for (Profesor prof : profesores) {
+            ProfesorTo profeTo = ProfesorMapper.toTo(prof);
+            profeTo.buildURI(uriInfo);
+            profEstudianteTos.add(profeTo);
+        }
         return Response.status(Response.Status.OK).entity(this.iProfesorService.buscarTodos(genero)).build();
 
     }
 
     @POST
     @Path("")
-    public Response guardar(@RequestBody Profesor profesor){
+    public Response guardar(@RequestBody Profesor profesor, @Context UriInfo uriInfo){
         this.iProfesorService.guardar(profesor);
+        ProfesorTo profesorTo = ProfesorMapper.toTo(profesor);
+        profesorTo.buildURI(uriInfo);
         return Response.status(228).entity(profesor).build();
         //este metodo guarda un profesor, el cual viene en el BODY
     }
 
     @PUT
     @Path("/{id}")
-    public Response actualizarPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id){
+    public Response actualizarPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id, @Context UriInfo uriInfo) {
         profesor.setId(id);
         this.iProfesorService.actualizarPorId(profesor);
-        return Response.status(228).entity(profesor).build();
+        ProfesorTo profesorActualizar = ProfesorMapper.toTo(profesor);
+        profesorActualizar.buildURI(uriInfo);
+        return Response.status(228).entity(profesorActualizar).build();
     }
 
     /* @PATCH
@@ -86,17 +104,8 @@ public class ProfesorController {
 
     @GET
     @Path("/{id}/hijos")
-    public List<Hijo> obtenerHijosPorId(@PathParam("id") Integer id) {
-        // Este método debería retornar una lista de hijos del profesor con el ID proporcionado
-        Hijo h1 = new Hijo();
-        h1.setNombre("Megan");  
-        Hijo h2 = new Hijo();
-        h2.setNombre("White");  
-
-        List<Hijo> hijos = new ArrayList<>();
-        hijos.add(h1);
-        hijos.add(h2);
-        return hijos; 
+    public List<HijoProfesor> obtenerHijosPorId(@PathParam("id") Integer id) {
+        return this.iHijoProfesorService.buscarPorProfesorId(id);
     }
 
 }

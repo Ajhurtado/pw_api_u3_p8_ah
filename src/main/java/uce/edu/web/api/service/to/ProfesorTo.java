@@ -17,25 +17,38 @@ public class ProfesorTo {
     private String genero;
 
     public Map<String, String> _links = new HashMap<>();
-
-    public ProfesorTo(Integer id, String nombre, String apellido, LocalDateTime fechaNacimiento, String numeroCedula,
-            String genero, UriInfo uriInfo) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.fechaNacimiento = fechaNacimiento;
-        this.numeroCedula = numeroCedula;
-        this.genero = genero;
-
+    
+    public void buildURI(UriInfo uriInfo) {
         URI todosHijos = uriInfo.getBaseUriBuilder()
             .path(ProfesorController.class)
-            .path(ProfesorController.class, "obtenerHijosPorId")
+            .path(ProfesorController.class, "consultarPorId")
             .build(id);
+        _links.put("hijos", todosHijos.toString());
 
-        _links.put("hijos", todosHijos.toString());    
+        URI consultarId = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "consultarPorId")
+            .build(id);
+        _links.put("obtenerPorId", consultarId.toString());
 
+        URI consultarTodos = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "consultarTodos")
+            .build();
+        _links.put("obtenerTodos", consultarTodos.toString());
+
+        URI actualizarId = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "actualizarPorId")
+            .build(id);
+        _links.put("actualizarPorId", actualizarId.toString());
+
+        URI borrarId = uriInfo.getBaseUriBuilder()
+            .path(ProfesorController.class)
+            .path(ProfesorController.class, "borrarPorId")
+            .build(id);
+        _links.put("borrar", borrarId.toString());
     }
-
     public Integer getId() {
         return id;
     }
@@ -82,6 +95,12 @@ public class ProfesorTo {
 
     public void setGenero(String genero) {
         this.genero = genero;
+    }
+    public Map<String, String> get_links() {
+        return _links;
+    }
+    public void set_links(Map<String, String> _links) {
+        this._links = _links;
     }
     
     
