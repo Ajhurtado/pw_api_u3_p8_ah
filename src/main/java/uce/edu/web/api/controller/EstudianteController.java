@@ -2,6 +2,7 @@ package uce.edu.web.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -66,16 +67,13 @@ public class EstudianteController {
     @GET
     @Path("")
     @Operation(summary = "Consulta todos los estudiantes", description = "Esta CAPACIDAD permite retornar una lista de todos los estudiantes registrados")
-    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia, @Context UriInfo uriInfo) {
+    public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia) {
         System.out.println(provincia);
-        List<Estudiante> estudiantes = this.estudianteService.buscarTodos(genero);
-        List<EstudianteTo> estudiantesTo = new ArrayList<>();
-        for (Estudiante est : estudiantes) {
-            EstudianteTo estuTo = EstudianteMapper.toTo(est);
-            estuTo.buildURI(uriInfo);
-            estudiantesTo.add(estuTo);
-        }
-        return Response.status(Response.Status.OK).entity(estudiantesTo).build();
+        List<EstudianteTo> estudiantes = this.estudianteService.buscarTodos(genero)
+        .stream()
+        .map(EstudianteMapper::toTo)
+        .collect(Collectors.toList());
+        return Response.status(Response.Status.OK).entity(estudiantes).build();
 
     }
 
@@ -83,36 +81,29 @@ public class EstudianteController {
     //Especfico en que va a llegar, en este caso MediaType de Jackarta, que es el tipo de contenido que se va a enviar
     @POST
     @Path("")
-    public Response guardar(@RequestBody Estudiante estudiante, @Context UriInfo uriInfo) {
-        this.estudianteService.guardar(estudiante);
-        EstudianteTo estuToGuardar = EstudianteMapper.toTo(estudiante);
-        estuToGuardar.buildURI(uriInfo);
-        return Response.status(Response.Status.CREATED).entity(estuToGuardar).build();
-
+    public Response guardar(@RequestBody EstudianteTo estudianteTo) {
+        this.estudianteService.guardar(EstudianteMapper.toEntity(estudianteTo));
+        return Response.status(Response.Status.CREATED).entity(estudianteTo).build();
     }
     
     //Debo enviar el estudiante que voy a actualizar, pero tambien necesita un PathParam
     @PUT
     @Path("/{id}")
-    public Response actualizarPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id, @Context UriInfo uriInfo) {
-        estudiante.setId(id);
-        this.estudianteService.actualizarPorId(estudiante);
-        EstudianteTo estuToActualizar = EstudianteMapper.toTo(estudiante);
-        estuToActualizar.buildURI(uriInfo);
-        return Response.status(Response.Status.OK).entity(estuToActualizar).build();
+    public Response actualizarPorId(@RequestBody EstudianteTo estudianteTo, @PathParam("id") Integer id) {
+        estudianteTo.setId(id);
+        this.estudianteService.actualizarPorId(EstudianteMapper.toEntity(estudianteTo));
+        return Response.status(Response.Status.OK).entity(estudianteTo).build();
  
     }
 
     @PATCH
     @Path("/{id}")
-    public Response actualizarParcialPorId(@RequestBody Estudiante estudianteTo, @PathParam("id") Integer id, @Context UriInfo uriInfo){
+    public Response actualizarParcialPorId(@RequestBody EstudianteTo estudianteTo, @PathParam("id") Integer id){
         estudianteTo.setId(id);
         EstudianteTo estuToActualizarParcial = EstudianteMapper.toTo(this.estudianteService.buscarPorId(id));
         if(estudianteTo.getApellido()!=null){
             estuToActualizarParcial.setApellido(estudianteTo.getApellido());
-            estuToActualizarParcial.buildURI(uriInfo);
         }
-        this.estudianteService.actualizarParcialPorId(EstudianteMapper.toEntity(estuToActualizarParcial));
         return Response.status(Response.Status.OK).entity(estuToActualizarParcial).build();
     } 
 

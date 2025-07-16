@@ -2,6 +2,7 @@ package uce.edu.web.api.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -46,7 +47,6 @@ public class ProfesorController {
     public Response consultarPorId(@PathParam("id") Integer id,@Context UriInfo uriInfo) {
         ProfesorTo profe = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
         profe.buildURI(uriInfo);
-
         return Response.status(228).entity(profe).build();
 
     }
@@ -55,48 +55,38 @@ public class ProfesorController {
     @Path("")
     public Response consultarTodos(@QueryParam("genero") String genero, @QueryParam("provincia") String provincia,@Context UriInfo uriInfo){
         System.out.println(provincia);
-        List<Profesor> profesores = this.iProfesorService.buscarTodos(genero);
-        List<ProfesorTo> profEstudianteTos = new ArrayList<>();
-        for (Profesor prof : profesores) {
-            ProfesorTo profeTo = ProfesorMapper.toTo(prof);
-            profeTo.buildURI(uriInfo);
-            profEstudianteTos.add(profeTo);
-        }
-        return Response.status(Response.Status.OK).entity(this.iProfesorService.buscarTodos(genero)).build();
+        List<ProfesorTo> profesores = this.iProfesorService.buscarTodos(genero)
+        .stream()
+        .map(ProfesorMapper::toTo)
+        .collect(Collectors.toList());
+        return Response.status(Response.Status.OK).entity(profesores).build();
 
     }
 
     @POST
     @Path("")
-    public Response guardar(@RequestBody Profesor profesor, @Context UriInfo uriInfo){
-        this.iProfesorService.guardar(profesor);
-        ProfesorTo profesorTo = ProfesorMapper.toTo(profesor);
-        profesorTo.buildURI(uriInfo);
-        return Response.status(228).entity(profesor).build();
-        //este metodo guarda un profesor, el cual viene en el BODY
+    public Response guardar(@RequestBody ProfesorTo profesorTo){
+        this.iProfesorService.guardar(ProfesorMapper.toEntity(profesorTo));
+        return Response.status(Response.Status.CREATED).entity(profesorTo).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response actualizarPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id, @Context UriInfo uriInfo) {
-        profesor.setId(id);
-        this.iProfesorService.actualizarPorId(profesor);
-        ProfesorTo profesorActualizar = ProfesorMapper.toTo(profesor);
-        profesorActualizar.buildURI(uriInfo);
-        return Response.status(228).entity(profesorActualizar).build();
+    public Response actualizarPorId(@RequestBody ProfesorTo profesorTo, @PathParam("id") Integer id) {
+        profesorTo.setId(id);
+        this.iProfesorService.actualizarPorId(ProfesorMapper.toEntity(profesorTo));
+        return Response.status(Response.Status.OK).entity(profesorTo).build();
     }
 
     @PATCH
     @Path("/{id}")
-    public Response actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id, @Context UriInfo uriInfo){
-        profesor.setId(id);
-        ProfesorTo profeToActualizarParcial = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
-        if(profesor.getApellido()!=null){
-            profeToActualizarParcial.setApellido(profesor.getApellido());
-            profeToActualizarParcial.buildURI(uriInfo);
+    public Response actualizarParcialPorId(@RequestBody ProfesorTo profesorTo, @PathParam("id") Integer id){
+        profesorTo.setId(id);
+        ProfesorTo estuToActualizarParcial = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
+        if(profesorTo.getApellido()!=null){
+            estuToActualizarParcial.setApellido(profesorTo.getApellido());
         }
-        this.iProfesorService.actualizarParcialPorId(ProfesorMapper.toEntity(profeToActualizarParcial));
-        return Response.status(Response.Status.OK).entity(profeToActualizarParcial).build();
+        return Response.status(Response.Status.OK).entity(estuToActualizarParcial).build();
     } 
 
     @DELETE
