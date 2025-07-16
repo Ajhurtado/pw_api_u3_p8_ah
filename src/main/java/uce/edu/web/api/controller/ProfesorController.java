@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -23,7 +24,9 @@ import uce.edu.web.api.repository.modelo.HijoProfesor;
 import uce.edu.web.api.repository.modelo.Profesor;
 import uce.edu.web.api.service.IHijoProfesorService;
 import uce.edu.web.api.service.IProfesorService;
+import uce.edu.web.api.service.mapper.EstudianteMapper;
 import uce.edu.web.api.service.mapper.ProfesorMapper;
+import uce.edu.web.api.service.to.EstudianteTo;
 import uce.edu.web.api.service.to.ProfesorTo;
 
 @Path("/profesores")
@@ -83,17 +86,18 @@ public class ProfesorController {
         return Response.status(228).entity(profesorActualizar).build();
     }
 
-    /* @PATCH
+    @PATCH
     @Path("/{id}")
-    public Response actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id){
+    public Response actualizarParcialPorId(@RequestBody Profesor profesor, @PathParam("id") Integer id, @Context UriInfo uriInfo){
         profesor.setId(id);
-        Profesor p = this.iProfesorService.buscarPorId(id);
+        ProfesorTo profeToActualizarParcial = ProfesorMapper.toTo(this.iProfesorService.buscarPorId(id));
         if(profesor.getApellido()!=null){
-            p.setApellido(profesor.getApellido());
+            profeToActualizarParcial.setApellido(profesor.getApellido());
+            profeToActualizarParcial.buildURI(uriInfo);
         }
-        this.iProfesorService.actualizarParcialPorId(p);
-        return Response.status(228).entity(p).build();
-    } */
+        this.iProfesorService.actualizarParcialPorId(ProfesorMapper.toEntity(profeToActualizarParcial));
+        return Response.status(Response.Status.OK).entity(profeToActualizarParcial).build();
+    } 
 
     @DELETE
     @Path("/{id}")

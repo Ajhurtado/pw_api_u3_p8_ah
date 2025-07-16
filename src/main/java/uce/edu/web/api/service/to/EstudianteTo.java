@@ -48,6 +48,12 @@ public class EstudianteTo {
             .build(id);
         _links.put("actualizarPorId", actualizarId.toString());
 
+        URI actualizarParcial = uriInfo.getBaseUriBuilder()
+            .path(EstudianteController.class)
+            .path(EstudianteController.class, "actualizarParcialPorId")
+            .build(id);
+        _links.put("actualizarParcialPorId", actualizarParcial.toString());
+
         URI borrarId = uriInfo.getBaseUriBuilder()
             .path(EstudianteController.class)
             .path(EstudianteController.class, "borrarPorId")

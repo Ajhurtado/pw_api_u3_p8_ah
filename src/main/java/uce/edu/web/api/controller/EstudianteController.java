@@ -103,17 +103,18 @@ public class EstudianteController {
  
     }
 
- /*    @PATCH
+    @PATCH
     @Path("/{id}")
-    public Response actualizarParcialPorId(@RequestBody Estudiante estudiante, @PathParam("id") Integer id){
-        estudiante.setId(id);
-        Estudiante e = this.estudianteService.buscarPorId(id);
-        if(estudiante.getApellido()!=null){
-            e.setApellido(estudiante.getApellido());
+    public Response actualizarParcialPorId(@RequestBody Estudiante estudianteTo, @PathParam("id") Integer id, @Context UriInfo uriInfo){
+        estudianteTo.setId(id);
+        EstudianteTo estuToActualizarParcial = EstudianteMapper.toTo(this.estudianteService.buscarPorId(id));
+        if(estudianteTo.getApellido()!=null){
+            estuToActualizarParcial.setApellido(estudianteTo.getApellido());
+            estuToActualizarParcial.buildURI(uriInfo);
         }
-        this.estudianteService.actualizarParcialPorId(e);
-        return Response.status(Response.Status.OK).entity(e).build();
-    } */
+        this.estudianteService.actualizarParcialPorId(EstudianteMapper.toEntity(estuToActualizarParcial));
+        return Response.status(Response.Status.OK).entity(estuToActualizarParcial).build();
+    } 
 
     //Aqui no necesitamos al estudiante, solamente al identificador
     @DELETE
