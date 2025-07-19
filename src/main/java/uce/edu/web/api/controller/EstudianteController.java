@@ -25,6 +25,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
+import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.repository.modelo.Hijo;
 import uce.edu.web.api.service.IEstudianteService;
 import uce.edu.web.api.service.IHijoService;
@@ -111,11 +112,16 @@ public class EstudianteController {
     @Path("/{id}")
     public Response actualizarParcialPorId(@RequestBody EstudianteTo estudianteTo, @PathParam("id") Integer id){
         estudianteTo.setId(id);
-        EstudianteTo estuToActualizarParcial = EstudianteMapper.toTo(this.estudianteService.buscarPorId(id));
-        if(estudianteTo.getApellido()!=null){
-            estuToActualizarParcial.setApellido(estudianteTo.getApellido());
+        // Obtener estudiante existente de la BD
+        Estudiante estudianteExistente = this.estudianteService.buscarPorId(id);
+        // Actualizar solo los campos no nulos
+        if(estudianteTo.getApellido() != null){
+            estudianteExistente.setApellido(estudianteTo.getApellido());
         }
-        return Response.status(Response.Status.OK).entity(estuToActualizarParcial).build();
+        // Persistir cambios en la base de datos
+        this.estudianteService.actualizarPorId(estudianteExistente);
+
+    return Response.status(Response.Status.OK).entity(EstudianteMapper.toTo(estudianteExistente)).build();
     } 
 
     //Aqui no necesitamos al estudiante, solamente al identificador
