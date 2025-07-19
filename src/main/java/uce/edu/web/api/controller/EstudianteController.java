@@ -1,12 +1,15 @@
 package uce.edu.web.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.ClaimValue;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -22,9 +25,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
-import uce.edu.web.api.repository.modelo.Estudiante;
 import uce.edu.web.api.repository.modelo.Hijo;
-import uce.edu.web.api.service.HijoServiceImpl;
 import uce.edu.web.api.service.IEstudianteService;
 import uce.edu.web.api.service.IHijoService;
 import uce.edu.web.api.service.mapper.EstudianteMapper;
@@ -39,6 +40,14 @@ public class EstudianteController {
     //este controler y tiene y representa a la identidad estudainte
     //cada metodo tiene un path
 
+    //PARA PONER SEGURIDAD DECLARAMOS UN JsonWebToken, que es un token de seguridad
+    @Inject
+    JsonWebToken jwt;
+    
+    @Inject
+    @Claim("sub") //sub es el subject del token, que es el identificador del usuario
+    ClaimValue<String> subject;
+
     @Inject
     private IEstudianteService estudianteService;
     @Inject
@@ -50,6 +59,8 @@ public class EstudianteController {
     //Para que me envie la propia api ponemos la anotacion Context
     @GET
     @Path("/{id}")
+    //colocamos seguridad con lo siguiente
+    @RolesAllowed({"admin"}) //roles que pueden acceder a este metodo
     public Response consultarPorId(@PathParam("id")Integer id, @Context UriInfo uriInfo) {
         //Response es una clase que nos permite retornar un codigo de estado, un mensaje y el objeto
         
